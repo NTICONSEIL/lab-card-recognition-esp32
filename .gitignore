@@ -1,0 +1,45 @@
+# Secrets
+secrets.h
+.env
+*.pem
+*.key
+
+# Jeu de données (stocké hors Git)
+dataset/raw/
+dataset/processed/
+*.jpg
+*.jpeg
+*.png
+!docs/**/*.png
+!hardware/**/*.png
+
+# Modèles entraînés (publiés en release, pas dans l'historique)
+model/checkpoints/
+model/exports/
+*.h5
+*.keras
+*.pt
+*.tflite
+*.onnx
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.ipynb_checkpoints/
+.pytest_cache/
+
+# PlatformIO / Arduino / ESP-IDF
+.pio/
+.vscode/.browse*
+build/
+sdkconfig.old
+managed_components/
+
+# Plateforme
+platform/data/
+
+# Système
+.DS_Store
+Thumbs.db

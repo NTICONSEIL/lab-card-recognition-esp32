@@ -1,0 +1,58 @@
+# Pile de la plateforme (réemploi de la pile du module Communications & IoT, S4)
+# Lancer : docker compose -f platform/docker-compose.yml up -d
+# Les mots de passe sont lus dans platform/.env (non versionné).
+
+services:
+  mosquitto:
+    image: eclipse-mosquitto:2
+    ports:
+      - "1883:1883"
+      - "8883:8883"
+    volumes:
+      - ./mosquitto/config:/mosquitto/config
+      - ./data/mosquitto:/mosquitto/data
+    restart: unless-stopped
+
+  nodered:
+    image: nodered/node-red:latest
+    ports:
+      - "1880:1880"
+    volumes:
+      - ./data/nodered:/data
+    depends_on:
+      - mosquitto
+    restart: unless-stopped
+
+  influxdb:
+    image: influxdb:2
+    ports:
+      - "8086:8086"
+    environment:
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME: ${INFLUX_USER}
+      DOCKER_INFLUXDB_INIT_PASSWORD: ${INFLUX_PASSWORD}
+      DOCKER_INFLUXDB_INIT_ORG: lab
+      DOCKER_INFLUXDB_INIT_BUCKET: cartes
+    volumes:
+      - ./data/influxdb:/var/lib/influxdb2
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD}
+    volumes:
+      - ./data/grafana:/var/lib/grafana
+    depends_on:
+      - influxdb
+    restart: unless-stopped
+
+  # Serveur d'inférence v1, à activer quand server/Dockerfile existe
+  # inference:
+  #   build: ../server
+  #   ports:
+  #     - "8000:8000"
+  #   env_file: .env
+  #   restart: unless-stopped
